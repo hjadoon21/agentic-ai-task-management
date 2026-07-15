@@ -2,7 +2,7 @@
 
 ## Team Members
 
-- Hashmat Jadoon
+- Hashmat Jadoongit status
 - Member 2
 - Member 3
 
