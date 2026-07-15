@@ -23,10 +23,26 @@ async function deleteTaskById(taskId) {
     return Task.findByIdAndDelete(taskId);
 }
 
+async function updateTaskAIAnalysis(taskId, aiAnalysis) {
+    return Task.findByIdAndUpdate(
+        taskId,
+        {
+            $set: {
+                aiAnalysis,
+            },
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
+}
+
 module.exports = {
     createTask,
     findAllTasks,
     findTaskById,
     updateTaskById,
     deleteTaskById,
+    updateTaskAIAnalysis,
 };

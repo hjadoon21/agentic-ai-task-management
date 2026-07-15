@@ -67,10 +67,51 @@ async function deleteTask(taskId) {
     return task;
 }
 
+async function saveAIAnalysis(taskId, analysisResult) {
+    if (!isValidObjectId(taskId)) {
+        const error = new Error("Invalid task ID.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const successfulProviders =
+        analysisResult.successfulResults.map((result) => ({
+            provider: result.provider,
+            model: result.model,
+            priority: result.priority,
+            category: result.category,
+            confidence: result.confidence,
+            suggestedActions: result.suggestedActions,
+            reasoningSummary: result.reasoningSummary,
+            responseTimeMs: result.responseTimeMs,
+        }));
+
+    const aiAnalysis = {
+        providers: successfulProviders,
+        consensus: analysisResult.consensus,
+        analyzedAt: new Date(),
+    };
+
+    const updatedTask =
+        await taskRepository.updateTaskAIAnalysis(
+            taskId,
+            aiAnalysis
+        );
+
+    if (!updatedTask) {
+        const error = new Error("Task not found.");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return updatedTask;
+}
+
 module.exports = {
     createTask,
     getAllTasks,
     getTaskById,
     updateTask,
     deleteTask,
+    saveAIAnalysis,
 };
