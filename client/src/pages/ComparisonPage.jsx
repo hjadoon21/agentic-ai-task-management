@@ -21,6 +21,38 @@ function formatResponseTime(milliseconds) {
     return `${(milliseconds / 1000).toFixed(2)} s`;
 }
 
+function clampPercentage(value) {
+    if (typeof value !== "number") {
+        return 0;
+    }
+
+    return Math.min(Math.max(value, 0), 100);
+}
+
+function getConfidencePercentage(confidence) {
+    if (typeof confidence !== "number") {
+        return 0;
+    }
+
+    return clampPercentage(confidence * 100);
+}
+
+function getResponseTimePercentage(
+    responseTimeMs,
+    maximumResponseTime
+) {
+    if (
+        typeof responseTimeMs !== "number" ||
+        maximumResponseTime <= 0
+    ) {
+        return 0;
+    }
+
+    return clampPercentage(
+        (responseTimeMs / maximumResponseTime) * 100
+    );
+}
+
 function ComparisonPage() {
     const [tasks, setTasks] = useState([]);
     const [selectedTaskId, setSelectedTaskId] =
@@ -42,6 +74,8 @@ function ComparisonPage() {
     (task) =>
         task.aiAnalysis?.providers?.length > 0
 );
+
+
 
 setTasks(analyzedTasks);
 
@@ -97,8 +131,21 @@ setSelectedTaskId(
     const consensus =
         selectedTask?.aiAnalysis?.consensus || null;
 
-    const providerResults =
-        selectedTask?.aiAnalysis?.providers || [];
+    const providerResults = useMemo(() => {
+    return selectedTask?.aiAnalysis?.providers ?? [];
+}, [selectedTask]);
+
+    const maximumResponseTime = useMemo(() => {
+    if (providerResults.length === 0) {
+        return 0;
+    }
+
+    return Math.max(
+        ...providerResults.map(
+            (result) => result.responseTimeMs || 0
+        )
+    );
+}, [providerResults]);    
 
     if (loading) {
         return (
@@ -318,6 +365,146 @@ setSelectedTaskId(
                             </div>
                         </section>
                     )}
+
+                    {providerResults.length > 0 && (
+    <section className="comparison-section">
+        <div className="section-title">
+            <div>
+                <p className="eyebrow">
+                    Visual Metrics
+                </p>
+
+                <h3>Provider Performance Charts</h3>
+            </div>
+        </div>
+
+        <div className="chart-grid">
+            <article className="comparison-chart">
+                <header className="chart-header">
+                    <div>
+                        <h4>Confidence</h4>
+
+                        <p>
+                            Higher percentages indicate
+                            greater provider confidence.
+                        </p>
+                    </div>
+                </header>
+
+                <div className="chart-list">
+                    {providerResults.map((result) => {
+                        const confidencePercentage =
+                            getConfidencePercentage(
+                                result.confidence
+                            );
+
+                        return (
+                            <div
+                                className="chart-row"
+                                key={`confidence-${result.provider}-${result.model}`}
+                            >
+                                <div className="chart-row-heading">
+                                    <span>
+                                        {result.provider}
+                                    </span>
+
+                                    <strong>
+                                        {formatConfidence(
+                                            result.confidence
+                                        )}
+                                    </strong>
+                                </div>
+
+                                <div
+                                    className="chart-track"
+                                    role="progressbar"
+                                    aria-label={`${result.provider} confidence`}
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                    aria-valuenow={Math.round(
+                                        confidencePercentage
+                                    )}
+                                >
+                                    <div
+                                        className="chart-bar"
+                                        style={{
+                                            width: `${confidencePercentage}%`,
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </article>
+
+            <article className="comparison-chart">
+                <header className="chart-header">
+                    <div>
+                        <h4>Response Time</h4>
+
+                        <p>
+                            Shorter response times indicate
+                            faster provider performance.
+                        </p>
+                    </div>
+                </header>
+
+                <div className="chart-list">
+                    {providerResults.map((result) => {
+                        const responseTimePercentage =
+                            getResponseTimePercentage(
+                                result.responseTimeMs,
+                                maximumResponseTime
+                            );
+
+                        return (
+                            <div
+                                className="chart-row"
+                                key={`response-${result.provider}-${result.model}`}
+                            >
+                                <div className="chart-row-heading">
+                                    <span>
+                                        {result.provider}
+                                    </span>
+
+                                    <strong>
+                                        {formatResponseTime(
+                                            result.responseTimeMs
+                                        )}
+                                    </strong>
+                                </div>
+
+                                <div
+                                    className="chart-track"
+                                    role="progressbar"
+                                    aria-label={`${result.provider} relative response time`}
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                    aria-valuenow={Math.round(
+                                        responseTimePercentage
+                                    )}
+                                >
+                                    <div
+                                        className="chart-bar chart-bar-response"
+                                        style={{
+                                            width: `${responseTimePercentage}%`,
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <p className="chart-note">
+                    Bars are scaled relative to the slowest
+                    provider for the selected task.
+                </p>
+            </article>
+        </div>
+    </section>
+)}
 
                     <section className="comparison-section">
                         <div className="section-title">

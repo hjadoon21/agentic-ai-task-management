@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
+import ProviderSelector from "../components/ProviderSelector";
 import {
     deleteTask,
     getTasks,
@@ -30,6 +31,41 @@ function Dashboard() {
         setLoading(false);
     }
 }, []);
+
+    const [selectedProviders, setSelectedProviders] =
+    useState(() => {
+        const savedProviders =
+            localStorage.getItem(
+                "selectedAIProviders"
+            );
+
+        if (!savedProviders) {
+            return [
+                "openai",
+                "gemini",
+                "deepseek",
+            ];
+        }
+
+        try {
+            const parsedProviders =
+                JSON.parse(savedProviders);
+
+            return Array.isArray(parsedProviders)
+                ? parsedProviders
+                : [
+                      "openai",
+                      "gemini",
+                      "deepseek",
+                  ];
+        } catch {
+            return [
+                "openai",
+                "gemini",
+                "deepseek",
+            ];
+        }
+    });
 
     useEffect(() => {
     let cancelled = false;
@@ -90,27 +126,50 @@ function Dashboard() {
     }
 
     async function handleAnalyze(task) {
+    if (selectedProviders.length === 0) {
+        setError(
+            "Select at least one AI provider before analyzing a task."
+        );
+
+        return;
+    }
+
     try {
         setAnalyzingTaskId(task._id);
         setError("");
         setSuccessMessage("");
 
-        const analysisData = await analyzeTask(task._id);
+        const analysisData = await analyzeTask(
+            task._id,
+            selectedProviders
+        );
 
         await loadTasks();
 
         const successfulProviderCount =
-            analysisData.task?.aiAnalysis?.providers?.length ??
-            analysisData.providerResults?.filter(
-                (result) => result.success
-            ).length ??
+            analysisData.successfulProviderCount ??
+            analysisData.task?.aiAnalysis
+                ?.providers?.length ??
             0;
 
-        setSuccessMessage(
-            `AI analysis completed using ${successfulProviderCount} successful provider(s).`
-        );
+        const failedProviderCount =
+            analysisData.failedProviderCount ?? 0;
+
+        let message =
+            `AI analysis completed using ` +
+            `${successfulProviderCount} successful provider(s).`;
+
+        if (failedProviderCount > 0) {
+            message +=
+                ` ${failedProviderCount} provider(s) failed gracefully.`;
+        }
+
+        setSuccessMessage(message);
     } catch (requestError) {
-        console.error("AI analysis error:", requestError);
+        console.error(
+            "AI analysis error:",
+            requestError
+        );
 
         setError(
             requestError.response?.data?.error ||
@@ -120,6 +179,15 @@ function Dashboard() {
     } finally {
         setAnalyzingTaskId(null);
     }
+}
+
+    function handleProviderSelection(providers) {
+    setSelectedProviders(providers);
+
+    localStorage.setItem(
+        "selectedAIProviders",
+        JSON.stringify(providers)
+    );
 }
 
     return (
@@ -144,6 +212,12 @@ function Dashboard() {
                     {successMessage}
                 </p>
             )}
+
+            <ProviderSelector
+                selectedProviders={selectedProviders}
+                onChange={handleProviderSelection}
+                disabled={analyzingTaskId !== null}
+            />
 
             <div className="dashboard-grid">
                 <TaskForm

@@ -9,15 +9,22 @@ const taskService = require(
 async function analyzeTask(req, res, next) {
     try {
         const { taskId } = req.params;
+        const { providers } = req.body || {};
 
-        const task = await taskService.getTaskById(taskId);
+        const task = await taskService.getTaskById(
+            taskId
+        );
 
         const analysisResult =
-            await aiOrchestrator.analyzeTask({
-                studentQuery: task.studentQuery,
-                department: task.department,
-                daysToDeadline: task.daysToDeadline,
-            });
+            await aiOrchestrator.analyzeTask(
+                {
+                    studentQuery: task.studentQuery,
+                    department: task.department,
+                    daysToDeadline:
+                        task.daysToDeadline,
+                },
+                providers
+            );
 
         const updatedTask =
             await taskService.saveAIAnalysis(
@@ -35,6 +42,14 @@ async function analyzeTask(req, res, next) {
                     analysisResult.failedResults,
                 consensus:
                     analysisResult.consensus,
+                selectedProviders:
+                    analysisResult.selectedProviders,
+                successfulProviderCount:
+                    analysisResult.successfulProviderCount,
+                failedProviderCount:
+                    analysisResult.failedProviderCount,
+                totalProviderCount:
+                    analysisResult.totalProviderCount,
             },
         });
     } catch (error) {
