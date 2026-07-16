@@ -1,6 +1,13 @@
 import TaskCard from "./TaskCard";
 
-function TaskList({ tasks, loading, onEdit, onDelete }) {
+function TaskList({
+    tasks,
+    loading,
+    onEdit,
+    onDelete,
+    onAnalyze,
+    analyzingTaskId,
+}) {
     if (loading) {
         return <p>Loading tasks...</p>;
     }
@@ -22,6 +29,10 @@ function TaskList({ tasks, loading, onEdit, onDelete }) {
                     task={task}
                     onEdit={onEdit}
                     onDelete={onDelete}
+                    onAnalyze={onAnalyze}
+                    analyzing={
+                        analyzingTaskId === task._id
+                    }
                 />
             ))}
         </div>

@@ -5,27 +5,31 @@ import {
     deleteTask,
     getTasks,
 } from "../services/taskService";
+import { analyzeTask } from "../services/aiService";
 
 function Dashboard() {
     const [tasks, setTasks] = useState([]);
     const [selectedTask, setSelectedTask] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [analyzingTaskId, setAnalyzingTaskId] = useState(null);
+    const [successMessage, setSuccessMessage] = useState("");
 
     const loadTasks = useCallback(async () => {
-        try {
-            setError("");
-            const taskData = await getTasks();
-            setTasks(taskData);
-        } catch (requestError) {
-            setError(
-                requestError.response?.data?.error ||
-                    "The tasks could not be loaded."
-            );
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    try {
+        setError("");
+
+        const taskData = await getTasks();
+        setTasks(taskData);
+    } catch (requestError) {
+        setError(
+            requestError.response?.data?.error ||
+                "The tasks could not be loaded."
+        );
+    } finally {
+        setLoading(false);
+    }
+}, []);
 
     useEffect(() => {
     let cancelled = false;
@@ -85,20 +89,61 @@ function Dashboard() {
         await loadTasks();
     }
 
+    async function handleAnalyze(task) {
+    try {
+        setAnalyzingTaskId(task._id);
+        setError("");
+        setSuccessMessage("");
+
+        const analysisData = await analyzeTask(task._id);
+
+        await loadTasks();
+
+        const successfulProviderCount =
+            analysisData.task?.aiAnalysis?.providers?.length ??
+            analysisData.providerResults?.filter(
+                (result) => result.success
+            ).length ??
+            0;
+
+        setSuccessMessage(
+            `AI analysis completed using ${successfulProviderCount} successful provider(s).`
+        );
+    } catch (requestError) {
+        console.error("AI analysis error:", requestError);
+
+        setError(
+            requestError.response?.data?.error ||
+                requestError.message ||
+                "The AI analysis could not be completed."
+        );
+    } finally {
+        setAnalyzingTaskId(null);
+    }
+}
+
     return (
-        <main className="dashboard">
-            <header className="dashboard-header">
-                <div>
-                    <p className="eyebrow">ITEC 4020 Project</p>
-                    <h1>Agentic AI Task Management System</h1>
-                    <p>
-                        Create and manage student tasks before comparing
-                        recommendations from multiple AI providers.
-                    </p>
-                </div>
+        <main className="dashboard page-container">
+
+            <header className="page-heading">
+                <p className="eyebrow">
+                    Task Management
+                </p>
+
+                <h2>Student Tasks</h2>
+
+                <p>
+                    Create, update, analyze, and manage student
+                    queries stored in MongoDB.
+                </p>
             </header>
 
             {error && <p className="error-message">{error}</p>}
+            {successMessage && (
+                <p className="success-message">
+                    {successMessage}
+                </p>
+            )}
 
             <div className="dashboard-grid">
                 <TaskForm
@@ -129,6 +174,8 @@ function Dashboard() {
                         loading={loading}
                         onEdit={setSelectedTask}
                         onDelete={handleDelete}
+                        onAnalyze={handleAnalyze}
+                        analyzingTaskId={analyzingTaskId}
                     />
                 </section>
             </div>
