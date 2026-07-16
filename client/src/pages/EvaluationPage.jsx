@@ -8,6 +8,7 @@ import EvaluationControls from "../components/evaluation/EvaluationControls";
 import ProviderMetricCard from "../components/evaluation/ProviderMetricCard";
 import ConfusionMatrix from "../components/evaluation/ConfusionMatrix";
 import ClassificationMetricsTable from "../components/evaluation/ClassificationMetricsTable";
+import EvaluationCharts from "../components/evaluation/EvaluationCharts";
 
 import {
     getDatasetSummary,
@@ -342,6 +343,12 @@ function EvaluationPage() {
                 )}
             </div>
         </section>
+
+        <EvaluationCharts
+            providerMetrics={
+                evaluationResult.providerMetrics
+            }
+        />
 
         <section className="comparison-section">
             <div className="section-title">
