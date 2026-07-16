@@ -4,6 +4,9 @@ const cors = require("cors");
 const taskRoutes = require("./routes/taskRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const aiRoutes = require("./routes/aiRoutes");
+const evaluationRoutes = require(
+    "./routes/evaluationRoutes"
+);
 
 const app = express();
 
@@ -24,6 +27,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/tasks", taskRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/evaluation", evaluationRoutes);
 
 app.use((req, res) => {
     res.status(404).json({
