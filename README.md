@@ -303,4 +303,4 @@ Possible future enhancements include:
 
 ## License
 
-This project was developed for educational purposes as part of a university software engineering course.
+This project was developed for educational purposes as part of a university information technology course.
