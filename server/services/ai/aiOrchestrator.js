@@ -55,17 +55,55 @@ function resolveProviders(providerNames) {
 }
 
 async function runProvider(provider, task) {
+    const providerName =
+        provider.name || "Unknown Provider";
+
+    const startTime = Date.now();
+
+    console.log("\n----------------------------------------");
+    console.log(`[${providerName}]`);
+    console.log("Sending request...");
+
     try {
         const result = await provider.analyze(task);
+
+        const responseTime =
+            Date.now() - startTime;
+
+        console.log(
+            `✓ Response received (${responseTime} ms)`
+        );
+        console.log(
+            `Priority: ${result.priority ?? "N/A"}`
+        );
+        console.log(
+            `Category: ${result.category ?? "N/A"}`
+        );
+        console.log(
+            `Confidence: ${result.confidence ?? "N/A"}`
+        );
 
         return {
             success: true,
             ...result,
         };
     } catch (error) {
+        const responseTime =
+            Date.now() - startTime;
+
+        console.log(
+            `✗ Request failed (${responseTime} ms)`
+        );
+        console.log(
+            `Error: ${
+                error.message ||
+                "Provider analysis failed."
+            }`
+        );
+
         return {
             success: false,
-            provider: provider.name,
+            provider: providerName,
             error:
                 error.message ||
                 "Provider analysis failed.",
@@ -75,6 +113,15 @@ async function runProvider(provider, task) {
 
 async function analyzeTask(task, providerNames) {
     const providers = resolveProviders(providerNames);
+
+    console.log("\n========================================");
+    console.log("Starting AI Analysis");
+    console.log("========================================");
+    console.log(
+        `Selected providers: ${providers
+            .map((provider) => provider.name)
+            .join(", ")}`
+    );
 
     const providerPromises = providers.map((provider) =>
         runProvider(provider, task)
@@ -106,6 +153,23 @@ async function analyzeTask(task, providerNames) {
     const consensus = consensusService.buildConsensus(
         successfulResults
     );
+
+    console.log("\nGenerating consensus...");
+    console.log("✓ Consensus complete");
+    console.log(
+        `Priority: ${consensus.priority ?? "N/A"}`
+    );
+    console.log(
+        `Category: ${consensus.category ?? "N/A"}`
+    );
+    console.log(
+        `Agreement: ${
+            consensus.agreementCount ?? "N/A"
+        }/${consensus.totalProviders ?? "N/A"}`
+    );
+    console.log("========================================");
+    console.log("AI Analysis Finished");
+    console.log("========================================\n");
 
     return {
         providerResults,
