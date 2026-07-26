@@ -1,3 +1,4 @@
+// This service provides functions to build prompts for AI providers. It constructs system prompts that define the task and guidelines for classification, as well as task-specific prompts that include the student's query, department, and deadline information.
 function buildSystemPrompt() {
     return `
 You classify university student queries for a task-management system.

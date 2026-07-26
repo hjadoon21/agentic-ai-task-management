@@ -18,6 +18,7 @@ import {
 const EVALUATION_PROVIDERS_STORAGE_KEY =
     "evaluationSelectedProviders";
 
+// Formats the provider name for display, mapping known provider identifiers to their human-readable names
 function formatProviderName(provider) {
     const providerNames = {
         openai: "OpenAI",
@@ -28,6 +29,7 @@ function formatProviderName(provider) {
     return providerNames[provider] || provider;
 }
 
+// Gets the initial list of selected evaluation providers from local storage, defaulting to OpenAI if none are found or if the stored value is invalid
 function getInitialEvaluationProviders() {
     const savedProviders =
         localStorage.getItem(
@@ -59,6 +61,7 @@ function getInitialEvaluationProviders() {
     return ["openai"];
 }
 
+// The Evaluation page component
 function EvaluationPage() {
     const [trainSummary, setTrainSummary] =
         useState(null);
@@ -142,6 +145,7 @@ function EvaluationPage() {
         };
     }, []);
 
+    // Handles the change in selected evaluation providers, updating the state and local storage to persist the user's choices across sessions
     function handleProvidersChange(providers) {
         setSelectedProviders(providers);
 
@@ -151,6 +155,7 @@ function EvaluationPage() {
         );
     }
 
+    // Handles the execution of the evaluation process, managing loading states, and displaying success or error messages
     async function handleRunEvaluation() {
         if (selectedProviders.length === 0) {
             setError(

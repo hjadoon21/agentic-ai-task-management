@@ -1,3 +1,4 @@
+// OpenAI AI provider implementation for analyzing tasks and returning structured responses.
 const OpenAI = require("openai");
 const { zodTextFormat } = require("openai/helpers/zod");
 
@@ -9,6 +10,7 @@ const {
 
 const providerName = "OpenAI";
 
+// Creates an OpenAI client using the API key from environment variables. Throws an error if the API key is not configured.
 function createClient() {
     if (!process.env.OPENAI_API_KEY) {
         throw new Error("OPENAI_API_KEY is not configured.");
@@ -19,6 +21,7 @@ function createClient() {
     });
 }
 
+// Analyzes a task using the OpenAI API. It constructs the request payload, sends it to OpenAI, and parses the structured response. The function returns the analysis result along with metadata such as the provider name, model used, and response time.
 async function analyze(task) {
     const client = createClient();
     const startedAt = Date.now();

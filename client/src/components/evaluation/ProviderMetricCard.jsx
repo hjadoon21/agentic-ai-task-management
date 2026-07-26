@@ -1,3 +1,4 @@
+// Displays a card summarizing the evaluation metrics for a specific AI provider
 function formatPercentage(value) {
     if (typeof value !== "number") {
         return "N/A";
@@ -6,6 +7,7 @@ function formatPercentage(value) {
     return `${value.toFixed(2)}%`;
 }
 
+// Formats a response time in milliseconds to a string in seconds with two decimal places
 function formatResponseTime(milliseconds) {
     if (typeof milliseconds !== "number") {
         return "N/A";
@@ -14,6 +16,7 @@ function formatResponseTime(milliseconds) {
     return `${(milliseconds / 1000).toFixed(2)} s`;
 }
 
+// Formats a provider identifier to a human-readable name
 function formatProviderName(provider) {
     const providerNames = {
         openai: "OpenAI",
@@ -24,6 +27,7 @@ function formatProviderName(provider) {
     return providerNames[provider] || provider;
 }
 
+// Displays a card summarizing the evaluation metrics for a specific AI provider
 function ProviderMetricCard({ metrics }) {
     const classificationMetrics =
         metrics.classificationMetrics || {};

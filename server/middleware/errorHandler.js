@@ -1,3 +1,4 @@
+// Error handling middleware for Express.js applications. This middleware captures errors that occur during request processing and sends appropriate HTTP responses based on the type of error.
 function errorHandler(error, req, res, next) {
     console.error(error);
 

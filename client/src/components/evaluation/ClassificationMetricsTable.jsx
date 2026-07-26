@@ -1,3 +1,4 @@
+// Formats a numeric value as a percentage string
 function formatPercentage(value) {
     if (typeof value !== "number") {
         return "N/A";
@@ -6,6 +7,7 @@ function formatPercentage(value) {
     return `${value.toFixed(2)}%`;
 }
 
+// Displays a table of classification metrics for a given provider
 function ClassificationMetricsTable({
     provider,
     classificationMetrics,

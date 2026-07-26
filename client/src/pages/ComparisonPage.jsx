@@ -5,6 +5,7 @@ import { getTasks } from "../services/taskService";
 const SELECTED_TASK_STORAGE_KEY =
     "comparisonSelectedTaskId";
 
+// Formats a confidence score as a percentage string, or returns "N/A" if the input is not a number
 function formatConfidence(confidence) {
     if (typeof confidence !== "number") {
         return "N/A";
@@ -13,6 +14,7 @@ function formatConfidence(confidence) {
     return `${Math.round(confidence * 100)}%`;
 }
 
+// Formats the response time in milliseconds to a string in seconds with two decimal places, or returns "N/A" if the input is not a number
 function formatResponseTime(milliseconds) {
     if (typeof milliseconds !== "number") {
         return "N/A";
@@ -21,6 +23,7 @@ function formatResponseTime(milliseconds) {
     return `${(milliseconds / 1000).toFixed(2)} s`;
 }
 
+// Sets the clamp percentage function to ensure values are between 0 and 100, returning 0 for non-numeric inputs
 function clampPercentage(value) {
     if (typeof value !== "number") {
         return 0;
@@ -29,6 +32,7 @@ function clampPercentage(value) {
     return Math.min(Math.max(value, 0), 100);
 }
 
+// Gets the confidence percentage by multiplying the confidence score by 100 and clamping it to the range [0, 100], returning 0 for non-numeric inputs
 function getConfidencePercentage(confidence) {
     if (typeof confidence !== "number") {
         return 0;
@@ -37,6 +41,7 @@ function getConfidencePercentage(confidence) {
     return clampPercentage(confidence * 100);
 }
 
+// Gets the response time percentage by dividing the response time by the maximum response time, multiplying by 100, and clamping it to the range [0, 100], returning 0 for non-numeric inputs or if the maximum response time is less than or equal to 0
 function getResponseTimePercentage(
     responseTimeMs,
     maximumResponseTime
@@ -53,6 +58,7 @@ function getResponseTimePercentage(
     );
 }
 
+// Compares AI providers' performance on a selected task, displaying consensus results, visual metrics, and individual provider results
 function ComparisonPage() {
     const [tasks, setTasks] = useState([]);
     const [selectedTaskId, setSelectedTaskId] =

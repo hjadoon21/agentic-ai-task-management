@@ -1,3 +1,4 @@
+// Displays a card summarizing the details of a task, including its status, priority, and AI analysis results
 function TaskCard({
     task,
     onEdit,

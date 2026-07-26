@@ -1,3 +1,4 @@
+// This service is responsible for evaluating the performance of AI providers on a dataset of student queries. It validates input parameters, retrieves dataset samples, runs analyses using multiple providers, collects results, and computes various metrics such as accuracy, precision, recall, and F1 scores. The evaluation results include detailed provider metrics, confusion matrices, and classification metrics.
 const datasetService = require(
     "../dataset/datasetService"
 );
@@ -18,6 +19,7 @@ const priorityLabels = [
     "Low",
 ];
 
+// Validates the sample size for the evaluation. It ensures that the sample size is an integer between 1 and 10, throwing an error if the validation fails.
 function validateSampleSize(value) {
     const sampleSize = Number(value);
 
@@ -37,6 +39,7 @@ function validateSampleSize(value) {
     return sampleSize;
 }
 
+// Validates the offset for the evaluation. It ensures that the offset is a non-negative integer, throwing an error if the validation fails.
 function validateOffset(value) {
     const offset = Number(value);
 
@@ -55,6 +58,7 @@ function validateOffset(value) {
     return offset;
 }
 
+// Validates the list of provider names for the evaluation. It checks that the input is a non-empty array of known providers, throwing an error for unknown providers or invalid input.
 function validateProviders(providerNames) {
     if (
         !Array.isArray(providerNames) ||
@@ -98,6 +102,7 @@ function validateProviders(providerNames) {
     return normalizedProviders;
 }
 
+// Creates an accumulator object for tracking metrics related to a specific AI provider during the evaluation. It initializes counts for attempted, successful, and failed analyses, as well as accumulators for confidence, response times, predictions, and failures.
 function createProviderAccumulator(providerName) {
     return {
         provider: providerName,
@@ -112,6 +117,7 @@ function createProviderAccumulator(providerName) {
     };
 }
 
+// Updates the accumulator with metrics from a successful provider result. It increments the successful count, checks for correct predictions, accumulates confidence and response time, and records the prediction details.
 function updateSuccessfulProviderMetrics(
     accumulator,
     datasetRow,
@@ -151,6 +157,7 @@ function updateSuccessfulProviderMetrics(
     });
 }
 
+// Updates the accumulator with metrics from a failed provider result. It increments the failed count and records the failure details, including the query ID, student query, actual priority, and error message.
 function updateFailedProviderMetrics(
     accumulator,
     datasetRow,
@@ -170,6 +177,7 @@ function updateFailedProviderMetrics(
     });
 }
 
+// Rounds a number to the specified number of decimal places. It uses a multiplier to shift the decimal point, rounds the value, and then shifts it back to achieve the desired precision.
 function roundNumber(value, decimalPlaces = 2) {
     const multiplier =
         10 ** decimalPlaces;
@@ -180,6 +188,7 @@ function roundNumber(value, decimalPlaces = 2) {
     );
 }
 
+// Creates a confusion matrix for the evaluation, initializing counts for true positives, false positives, false negatives, and true negatives for each priority label (High, Medium, Low).
 function createConfusionMatrix() {
     return {
         High: {
@@ -200,6 +209,7 @@ function createConfusionMatrix() {
     };
 }
 
+// Builds a confusion matrix from the predictions made by the AI providers. It iterates through each prediction, updating the counts in the confusion matrix based on the actual and predicted priority labels.
 function buildConfusionMatrix(predictions) {
     const matrix = createConfusionMatrix();
 
@@ -218,6 +228,7 @@ function buildConfusionMatrix(predictions) {
     return matrix;
 }
 
+// Calculates metrics for a specific priority class based on the confusion matrix. It computes true positives, false positives, false negatives, true negatives, precision, recall, F1 score, and support for the given priority label.
 function calculateClassMetrics(
     confusionMatrix,
     priority
@@ -323,6 +334,7 @@ function calculateClassMetrics(
     };
 }
 
+// Calculates macro-averaged classification metrics across all priority classes based on the confusion matrix. It computes the average precision, recall, and F1 score, as well as their percentage representations.
 function calculateClassificationMetrics(
     confusionMatrix
 ) {
@@ -394,6 +406,7 @@ function calculateClassificationMetrics(
     };
 }
 
+// Finalizes the provider metrics by calculating accuracy, success rate, average confidence, average response time, confusion matrix, and classification metrics based on the accumulated data. It returns a structured object containing all relevant metrics for the provider.
 function finalizeProviderMetrics(accumulator) {
     const accuracy =
         accumulator.successfulCount > 0
@@ -488,6 +501,7 @@ function finalizeProviderMetrics(accumulator) {
     };
 }
 
+// Runs the evaluation process for the specified dataset split, sample size, offset, and selected providers. It retrieves a sample of dataset rows, processes each row with the selected providers, collects results, and computes metrics for each provider. The function returns a comprehensive evaluation report including configuration details, dataset statistics, provider metrics, and individual record results.
 async function runEvaluation({
     split = "test",
     sampleSize = 5,

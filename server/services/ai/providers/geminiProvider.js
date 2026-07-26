@@ -1,3 +1,4 @@
+// This file defines the Gemini AI provider for analyzing tasks. It uses the Google Gemini API to classify tasks based on their content and returns structured results including priority, category, confidence, suggested actions, and reasoning summary. The provider includes retry logic for handling transient errors and validates the response against a defined schema.
 const { GoogleGenAI } = require("@google/genai");
 
 const aiResponseSchema = require("../schemas/aiResponseSchema");
@@ -60,6 +61,7 @@ const geminiResponseSchema = {
     additionalProperties: false,
 };
 
+// Creates a Google Gemini client using the API key from environment variables. Throws an error if the API key is not configured.
 function createClient() {
     if (!process.env.GEMINI_API_KEY) {
         throw new Error("GEMINI_API_KEY is not configured.");
@@ -70,12 +72,14 @@ function createClient() {
     });
 }
 
+// Waits for a specified number of milliseconds before resolving the promise. This is used to implement delays between retry attempts for failed requests.
 function wait(milliseconds) {
     return new Promise((resolve) => {
         setTimeout(resolve, milliseconds);
     });
 }
 
+// Creates a custom error object for Gemini request timeouts, including a specific error code for identification.
 function createTimeoutError(timeoutMilliseconds) {
     const error = new Error(
         `Gemini request timed out after ${timeoutMilliseconds} ms.`
@@ -86,6 +90,7 @@ function createTimeoutError(timeoutMilliseconds) {
     return error;
 }
 
+// Runs an asynchronous operation with a specified timeout. If the operation does not complete within the timeout period, it rejects with a timeout error.
 async function runWithTimeout(operation, timeoutMilliseconds) {
     let timeoutId;
 
@@ -105,6 +110,7 @@ async function runWithTimeout(operation, timeoutMilliseconds) {
     }
 }
 
+// Retrieves the HTTP status code from an error object, checking various properties to account for different error structures. Returns null if no status code is found.
 function getErrorStatus(error) {
     return (
         error.status ||
@@ -115,6 +121,7 @@ function getErrorStatus(error) {
     );
 }
 
+// Retrieves a user-friendly error message from an error object, checking various properties to account for different error structures. Returns a default message if no specific message is found.
 function getErrorMessage(error) {
     if (typeof error?.message === "string") {
         return error.message;
@@ -127,6 +134,7 @@ function getErrorMessage(error) {
     }
 }
 
+// Determines whether an error from the Gemini API is retryable based on its HTTP status code, error code, or specific message content. Retryable errors include timeouts, rate limiting (429), server errors (500, 502, 503, 504), and certain error messages indicating resource exhaustion or high demand.
 function isRetryableGeminiError(error) {
     const status = getErrorStatus(error);
     const message = getErrorMessage(error).toLowerCase();
@@ -150,6 +158,7 @@ function isRetryableGeminiError(error) {
     );
 }
 
+// Performs a request to the Gemini API with retry logic for handling transient errors. It attempts the request up to a specified maximum number of attempts, with exponential backoff delays between retries. If all attempts fail, it throws the last encountered error.
 async function generateWithRetry(
     client,
     request,
@@ -209,6 +218,7 @@ async function generateWithRetry(
     throw lastError;
 }
 
+// Parses and validates the response from the Gemini API. It checks that the response contains valid JSON and conforms to the expected schema. If the response is invalid or does not match the schema, it throws an error with details about the validation failure.
 function parseGeminiResponse(response) {
     const responseText = response.text;
 
@@ -251,6 +261,7 @@ function parseGeminiResponse(response) {
     return validationResult.data;
 }
 
+// Analyzes a task using the Gemini AI provider. It constructs the request payload, sends it to the Gemini API with retry logic, and parses the response. The function returns the analysis result along with metadata such as the provider name, model used, and response time.
 async function analyze(task) {
     const client = createClient();
     const startedAt = Date.now();

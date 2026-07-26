@@ -1,3 +1,4 @@
+// Displays a panel for selecting AI providers to use in task classification
 const providerOptions = [
     {
         id: "openai",
@@ -19,11 +20,13 @@ const providerOptions = [
     },
 ];
 
+// Displays a panel for selecting AI providers to use in task classification
 function ProviderSelector({
     selectedProviders,
     onChange,
     disabled,
 }) {
+    // Handles the change in provider selection, updating the selected providers list
     function handleProviderChange(providerId) {
         const isSelected =
             selectedProviders.includes(providerId);

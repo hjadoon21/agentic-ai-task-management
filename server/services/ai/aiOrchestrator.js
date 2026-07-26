@@ -1,3 +1,4 @@
+// This service orchestrates the analysis of tasks using multiple AI providers. It handles provider resolution, parallel execution of analysis requests, and consensus building from the results.
 const openaiProvider = require("./providers/openaiProvider");
 const geminiProvider = require("./providers/geminiProvider");
 const deepseekProvider = require("./providers/deepseekProvider");
@@ -11,6 +12,7 @@ const providerRegistry = {
 
 const defaultProviderNames = Object.keys(providerRegistry);
 
+// Resolves the list of provider names to their corresponding provider implementations. If no provider names are provided, it defaults to using all registered providers. It validates the input and throws an error for unknown providers.
 function resolveProviders(providerNames) {
     if (providerNames === undefined) {
         return defaultProviderNames.map(
@@ -54,6 +56,7 @@ function resolveProviders(providerNames) {
     );
 }
 
+// Runs the analysis for a single provider and task. It measures the response time, logs the results, and returns a structured result object indicating success or failure along with relevant metadata.
 async function runProvider(provider, task) {
     const providerName =
         provider.name || "Unknown Provider";
@@ -111,6 +114,7 @@ async function runProvider(provider, task) {
     }
 }
 
+// Analyzes a task using the specified AI providers. It resolves the providers, runs their analysis in parallel, collects the results, and builds a consensus from the successful analyses. It returns a comprehensive result object containing provider results, consensus data, and counts of successful and failed analyses.
 async function analyzeTask(task, providerNames) {
     const providers = resolveProviders(providerNames);
 

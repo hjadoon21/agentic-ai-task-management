@@ -6,6 +6,7 @@ const taskService = require(
     "../services/task/taskService"
 );
 
+// This function handles the analysis of a specific task using AI providers. It retrieves the task by its ID, invokes the AI orchestrator to analyze the task with the specified providers, saves the analysis results, and returns the updated task along with provider results and consensus information in the response.
 async function analyzeTask(req, res, next) {
     try {
         const { taskId } = req.params;

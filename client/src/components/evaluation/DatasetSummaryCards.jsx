@@ -1,3 +1,4 @@
+// Formats the priority distribution into a readable string
 function formatPriorityDistribution(distribution) {
     if (!distribution) {
         return "No distribution available";
@@ -10,6 +11,7 @@ function formatPriorityDistribution(distribution) {
     ].join(" · ");
 }
 
+// Displays a summary card for a dataset split (training or test)
 function DatasetSummaryCard({
     title,
     summary,
@@ -91,6 +93,7 @@ function DatasetSummaryCard({
     );
 }
 
+// Displays summary cards for both training and test datasets
 function DatasetSummaryCards({
     trainSummary,
     testSummary,

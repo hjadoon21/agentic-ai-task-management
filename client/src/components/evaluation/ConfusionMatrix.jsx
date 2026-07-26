@@ -4,6 +4,7 @@ const priorityLabels = [
     "Low",
 ];
 
+// Displays a confusion matrix for a given provider and matrix data
 function ConfusionMatrix({
     provider,
     matrix,

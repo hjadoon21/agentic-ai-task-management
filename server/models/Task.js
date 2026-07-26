@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// This file defines the Mongoose schema for the Task model, which represents a task in the database. The schema includes fields for student queries, department, days to deadline, actual priority, source, dataset query ID, status, and AI analysis results. It also defines sub-schemas for provider results and consensus analysis.
 const providerResultSchema = new mongoose.Schema(
     {
         provider: {
@@ -63,6 +64,7 @@ const providerResultSchema = new mongoose.Schema(
     }
 );
 
+// This schema defines the structure for storing consensus analysis results from multiple AI providers. It includes fields for priority, category, confidence, agreement count, total providers, agreement percentage, and information about the fastest and slowest providers.
 const consensusSchema = new mongoose.Schema(
     {
         priority: {
@@ -139,6 +141,7 @@ slowestResponseTimeMs: {
     }
 );
 
+// This schema defines the structure for storing AI analysis results for a task. It includes an array of provider results, a consensus analysis, and a timestamp for when the analysis was performed.
 const aiAnalysisSchema = new mongoose.Schema(
     {
         providers: {
@@ -161,6 +164,7 @@ const aiAnalysisSchema = new mongoose.Schema(
     }
 );
 
+// This schema defines the main structure for a Task document in the database. It includes fields for student queries, department, days to deadline, actual priority, source, dataset query ID, status, and AI analysis results. The schema also includes timestamps for when the task was created and last updated.
 const taskSchema = new mongoose.Schema(
     {
         studentQuery: {

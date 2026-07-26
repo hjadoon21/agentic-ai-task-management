@@ -1,3 +1,4 @@
+// This file defines the routes for task-related operations in the application. It sets up an Express router and defines routes for creating, retrieving, updating, and deleting tasks. The routes are linked to the corresponding methods in the taskController, which handle the logic for each operation.
 const express = require("express");
 const taskController = require("../controllers/taskController");
 

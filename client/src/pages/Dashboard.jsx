@@ -8,6 +8,7 @@ import {
 } from "../services/taskService";
 import { analyzeTask } from "../services/aiService";
 
+// Displays the main dashboard for managing student tasks, including task creation, editing, deletion, and AI analysis with selected providers
 function Dashboard() {
     const [tasks, setTasks] = useState([]);
     const [selectedTask, setSelectedTask] = useState(null);
@@ -95,6 +96,7 @@ function Dashboard() {
     };
 }, []);
 
+    // Handles the deletion of a task, confirming with the user and updating the task list upon success
     async function handleDelete(task) {
         const confirmed = window.confirm(
             "Are you sure you want to delete this task?"
@@ -120,11 +122,13 @@ function Dashboard() {
         }
     }
 
+    // Handles the saving of a task, resetting the selected task and reloading the task list
     async function handleSaved() {
         setSelectedTask(null);
         await loadTasks();
     }
 
+    // Handles the analysis of a task using selected AI providers, managing loading states, and displaying success or error messages
     async function handleAnalyze(task) {
     if (selectedProviders.length === 0) {
         setError(
@@ -181,6 +185,7 @@ function Dashboard() {
     }
 }
 
+    // Handles the selection of AI providers, updating the state and local storage to persist the user's choices across sessions
     function handleProviderSelection(providers) {
     setSelectedProviders(providers);
 

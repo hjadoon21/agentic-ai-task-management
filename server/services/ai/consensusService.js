@@ -1,3 +1,4 @@
+// This service is responsible for building a consensus from the results of multiple AI providers. It analyzes the results to determine the most common values for priority and category, calculates average confidence, and identifies the fastest and slowest providers based on response times.
 function getMostCommonValue(results, fieldName) {
     const counts = new Map();
 
@@ -23,11 +24,13 @@ function getMostCommonValue(results, fieldName) {
     };
 }
 
+// Rounds a number to the specified number of decimal places. It uses a multiplier to shift the decimal point, rounds the value, and then shifts it back to achieve the desired precision.
 function roundNumber(value, decimalPlaces = 2) {
     const multiplier = 10 ** decimalPlaces;
     return Math.round(value * multiplier) / multiplier;
 }
 
+// Resolves ties in priority votes by considering the average confidence of tied priorities. If there is a single tied priority, it returns that value. If multiple priorities are tied, it calculates the average confidence for each tied priority and selects the one with the highest average confidence.
 function resolvePriorityTie(results, vote) {
     const tiedPriorities = [];
 
@@ -78,6 +81,7 @@ function resolvePriorityTie(results, vote) {
     return confidenceByPriority[0].priority;
 }
 
+// Builds a consensus from the results of multiple AI providers. It determines the most common priority and category, calculates average confidence, computes agreement percentage, and identifies the fastest and slowest providers based on response times. The function returns a structured object containing the consensus data.
 function buildConsensus(successfulResults) {
     if (
         !Array.isArray(successfulResults) ||

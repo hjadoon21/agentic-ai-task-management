@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createTask, updateTask } from "../services/taskService";
 
+// Displays a form for creating or editing a task, including fields for student query, department, days to deadline, priority, and status
 const emptyForm = {
     studentQuery: "",
     department: "",
@@ -9,6 +10,7 @@ const emptyForm = {
     status: "Pending",
 };
 
+// Returns the initial form data based on the provided task, or an empty form if no task is provided
 function getInitialForm(task) {
     if (!task) {
         return emptyForm;
@@ -23,6 +25,7 @@ function getInitialForm(task) {
     };
 }
 
+// Displays a form for creating or editing a task, including fields for student query, department, days to deadline, priority, and status
 function TaskForm({ taskToEdit, onSaved, onCancelEdit }) {
     const [formData, setFormData] = useState(() =>
     getInitialForm(taskToEdit)
@@ -73,6 +76,7 @@ function TaskForm({ taskToEdit, onSaved, onCancelEdit }) {
         }
     }
 
+    // Handles the cancellation of editing a task, resetting the form and notifying the parent component
     function handleCancel() {
         setFormData(emptyForm);
         setError("");

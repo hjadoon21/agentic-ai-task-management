@@ -1,3 +1,4 @@
+// Displays controls for configuring and running an evaluation of AI providers on a dataset
 const evaluationProviderOptions = [
     {
         id: "openai",
@@ -13,12 +14,14 @@ const evaluationProviderOptions = [
     },
 ];
 
+// Sets the sample size options for the evaluation controls
 const sampleSizeOptions = [
     1,
     5,
     10,
 ];
 
+// Displays controls for configuring and running an evaluation of AI providers on a dataset
 function EvaluationControls({
     split,
     sampleSize,
@@ -31,6 +34,7 @@ function EvaluationControls({
     onProvidersChange,
     onRun,
 }) {
+    // Toggles the selection of a provider in the evaluation controls
     function toggleProvider(providerId) {
         const alreadySelected =
             selectedProviders.includes(providerId);
@@ -51,6 +55,7 @@ function EvaluationControls({
         ]);
     }
 
+    // Handles the form submission for running the evaluation
     function handleSubmit(event) {
         event.preventDefault();
         onRun();

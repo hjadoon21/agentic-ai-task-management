@@ -1,3 +1,4 @@
+// This file defines the DeepSeek AI provider service, which interacts with the DeepSeek API to analyze tasks. It includes functions for creating an API client, handling retries for failed requests, parsing and validating responses, and performing the analysis of tasks using DeepSeek's AI capabilities.
 const axios = require("axios");
 
 const aiResponseSchema = require("../schemas/aiResponseSchema");
@@ -8,6 +9,7 @@ const {
 
 const providerName = "DeepSeek";
 
+// Creates an Axios client for interacting with the DeepSeek API, using the API key from environment variables. Throws an error if the API key is not configured.
 function createClient() {
     if (!process.env.DEEPSEEK_API_KEY) {
         throw new Error("DEEPSEEK_API_KEY is not configured.");
@@ -23,12 +25,14 @@ function createClient() {
     });
 }
 
+// Waits for a specified number of milliseconds before resolving the promise. This is used to implement delays between retry attempts for failed requests.
 function wait(milliseconds) {
     return new Promise((resolve) => {
         setTimeout(resolve, milliseconds);
     });
 }
 
+// Retrieves the HTTP status code from an error object, checking various properties to account for different error structures. Returns null if no status code is found.
 function getErrorStatus(error) {
     return (
         error.response?.status ||
@@ -38,6 +42,7 @@ function getErrorStatus(error) {
     );
 }
 
+// Retrieves a user-friendly error message from an error object, checking various properties to account for different error structures. Returns a default message if no specific message is found.
 function getErrorMessage(error) {
     return (
         error.response?.data?.error?.message ||
@@ -47,6 +52,7 @@ function getErrorMessage(error) {
     );
 }
 
+// Determines whether an error from the DeepSeek API is retryable based on its HTTP status code or error code. Retryable errors include rate limiting (429), server errors (500, 502, 503, 504), and connection timeouts.
 function isRetryableDeepSeekError(error) {
     const status = getErrorStatus(error);
 
@@ -61,6 +67,7 @@ function isRetryableDeepSeekError(error) {
     );
 }
 
+// Performs a request to the DeepSeek API with retry logic for handling transient errors. It attempts the request up to a specified maximum number of attempts, with exponential backoff delays between retries. If all attempts fail, it throws the last encountered error.
 async function requestWithRetry(
     client,
     requestBody,
@@ -117,6 +124,7 @@ async function requestWithRetry(
     throw lastError;
 }
 
+// Parses and validates the response from the DeepSeek API. It checks that the response contains valid JSON and conforms to the expected schema. If the response is invalid or does not match the schema, it throws an error with details about the validation failure.
 function parseDeepSeekResponse(response) {
     const responseText =
         response.data?.choices?.[0]?.message?.content;
@@ -160,6 +168,7 @@ function parseDeepSeekResponse(response) {
     return validationResult.data;
 }
 
+// Analyzes a task using the DeepSeek AI provider. It constructs the request payload, sends it to the DeepSeek API with retry logic, and parses the response. The function returns the analysis result along with metadata such as the provider name, model used, and response time.
 async function analyze(task) {
     const client = createClient();
     const startedAt = Date.now();

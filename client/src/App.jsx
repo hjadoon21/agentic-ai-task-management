@@ -11,6 +11,7 @@ import EvaluationPage from "./pages/EvaluationPage";
 
 import "./styles/dashboard.css";
 
+// The main application component that sets up routing for the dashboard, comparison, and evaluation pages, using the AppLayout component for consistent layout and navigation
 function App() {
     return (
         <Routes>

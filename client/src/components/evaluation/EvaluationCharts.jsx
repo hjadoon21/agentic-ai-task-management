@@ -1,3 +1,4 @@
+// Formats the provider name for display
 function formatProviderName(provider) {
     const names = {
         openai: "OpenAI",
@@ -8,6 +9,7 @@ function formatProviderName(provider) {
     return names[provider] || provider;
 }
 
+// Clamps a numeric value to the range [0, 100]
 function clampPercentage(value) {
     if (typeof value !== "number") {
         return 0;
@@ -16,6 +18,7 @@ function clampPercentage(value) {
     return Math.min(Math.max(value, 0), 100);
 }
 
+// Calculates the maximum average response time from a list of provider metrics
 function getMaximumResponseTime(providerMetrics) {
     if (providerMetrics.length === 0) {
         return 0;
@@ -29,6 +32,7 @@ function getMaximumResponseTime(providerMetrics) {
     );
 }
 
+// Displays a percentage-based chart for a given metric across providers
 function PercentageChart({
     title,
     description,
@@ -92,6 +96,7 @@ function PercentageChart({
     );
 }
 
+// Displays a chart of average response times for each provider
 function ResponseTimeChart({ providerMetrics }) {
     const maximumResponseTime =
         getMaximumResponseTime(providerMetrics);
@@ -171,6 +176,7 @@ function ResponseTimeChart({ providerMetrics }) {
     );
 }
 
+// Displays a set of evaluation charts for multiple providers
 function EvaluationCharts({ providerMetrics }) {
     if (
         !Array.isArray(providerMetrics) ||

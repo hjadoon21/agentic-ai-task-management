@@ -1,5 +1,6 @@
 import TaskCard from "./TaskCard";
 
+// Displays a list of tasks, handling loading states and empty states, and rendering TaskCard components for each task
 function TaskList({
     tasks,
     loading,

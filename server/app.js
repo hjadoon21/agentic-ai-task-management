@@ -1,3 +1,4 @@
+// This file sets up the Express application, including middleware for CORS, JSON parsing, and routing for tasks, AI analysis, and evaluation. It also includes error handling for undefined routes and general errors.
 const express = require("express");
 const cors = require("cors");
 

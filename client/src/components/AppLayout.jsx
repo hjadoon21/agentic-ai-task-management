@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router";
 
+// Displays the main layout of the application, including the header and navigation links
 function AppLayout() {
     function getNavLinkClass({ isActive }) {
         return isActive
